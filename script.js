@@ -9,46 +9,53 @@ PIXI.utils.sayHello();
 let app = new Application({ width: 800, height: 450, antialias: true });
 document.body.appendChild(app.view);
 
-let dungeon;
+let dungeon, enemy, player;
+let playerTexture, enemyTexture;
 let enemyHealth;
 let intelligence = 10;
 let attackSpeed = 1000;
 let lastAttacked = 0;
 
-let player =
-
-    loader
+loader
     .add("img/bg.png")
     .add("img/player.json")
     .add("img/enemy.json")
     .load(setup);
 
-// Initialise
+// Initialize
 function setup() {
     let bg = new Sprite(resources["img/bg.png"].texture);
     app.stage.addChild(bg);
 
-    let playerTexture = resources["img/player.json"].textures;
-    let enemyTexture = resources["img/enemy.json"].textures;
+    playerTexture = resources["img/player.json"].textures;
+    enemyTexture = resources["img/enemy.json"].textures;
 
-    let player = new Sprite(playerTexture["player-stand.png"]);
-    player.height = player.height / 3;
-    player.width = player.width / 3;
-    player.x = 230;
-    player.y = 250;
-    let enemy = new Sprite(enemyTexture["enemy-stand.png"]);
-    enemy.height = enemy.height / 3;
-    enemy.width = enemy.width / 3;
-    enemy.x = 590;
-    enemy.y = 250;
-    app.stage.addChild(player);
-    app.stage.addChild(enemy);
+    initPlayer();
+    initEnemy();
 
     dungeon = new Sprite();
     app.stage.addChild(dungeon);
     drawEnemyHealth();
     state = world;
     app.ticker.add(delta => tick(delta));
+}
+
+function initPlayer() {
+    player = new Sprite(playerTexture["player-stand.png"]);
+    player.height = player.height / 3;
+    player.width = player.width / 3;
+    player.x = 230;
+    player.y = 250;
+}
+
+function initEnemy() {
+    enemy = new Sprite(enemyTexture["enemy-stand.png"]);
+    enemy.height = enemy.height / 3;
+    enemy.width = enemy.width / 3;
+    enemy.x = 590;
+    enemy.y = 250;
+    app.stage.addChild(player);
+    app.stage.addChild(enemy);
 }
 
 // 60 times a second
