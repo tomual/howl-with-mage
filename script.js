@@ -15,6 +15,7 @@ let enemyHealth;
 let intelligence = 10;
 let attackSpeed = 1000;
 let lastAttacked = 0;
+let damageText;
 
 loader
     .add("img/bg.png")
@@ -65,6 +66,9 @@ function tick(delta) {
 
 // World stage
 function world(delta) {
+    if (damageText) {
+        damageText.alpha -= 0.04;
+    }
     if (performance.now() - lastAttacked > attackSpeed) {
         lastAttacked = performance.now();
         attack();
@@ -95,13 +99,33 @@ function drawEnemyHealth() {
 // Attack enemy
 function attack() {
     let damage = getDamage(intelligence);
-    let endHealth = enemyHealth.outer.width - damage;
+    let endHealth = enemyHealth.outer.width - Math.floor(damage / 10);
     if (endHealth <= 0) {
         enemyHealth.outer.width = 0;
         enemyDie();
     } else {
-        enemyHealth.outer.width -= getDamage(intelligence);
+        showDamage(damage);
+        enemyHealth.outer.width -= Math.floor(damage / 10);
     }
+}
+
+function showDamage(damage) {
+    let style = new PIXI.TextStyle({
+        fontFamily: "Arial",
+        fontSize: 36,
+        fill: "white",
+        stroke: '#000',
+        strokeThickness: 4,
+        dropShadow: true,
+        dropShadowColor: "#000000",
+        dropShadowBlur: 4,
+        dropShadowAngle: Math.PI / 2,
+        dropShadowDistance: 3,
+    });
+    damageText = new PIXI.Text(damage, style);
+    damageText.x = 500;
+    damageText.y = 200;
+    app.stage.addChild(damageText);
 }
 
 // Enemy death
@@ -112,7 +136,9 @@ function enemyDie() {
 // Calculate damage
 function getDamage(intelligence) {
     let baseDamage = 1;
-    return baseDamage * intelligence / 2;
+    let min = intelligence * 5 + baseDamage;
+    let max = intelligence * 10 + baseDamage;
+    return randomInt(min, max);
 }
 
 // Random number
