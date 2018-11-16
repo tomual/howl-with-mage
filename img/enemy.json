@@ -6,8 +6,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":898,"h":1024},
-	"sourceSize": {"w":898,"h":1024},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":898,"h":1024}
 },
 "enemy-stand.png":
 {
@@ -15,8 +14,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":898,"h":1024},
-	"sourceSize": {"w":898,"h":1024},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":898,"h":1024}
 }},
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
@@ -25,6 +23,6 @@
 	"format": "RGBA8888",
 	"size": {"w":1796,"h":1024},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:4f2950be54227fd618268b19a0ea412d:399b4a74233283e26a6e47dc0aa6a08d:a99356c10d69482e9bee53d25c3d05e1$"
+	"smartupdate": "$TexturePacker:SmartUpdate:e40a7917182edd77a4faeadc2adca769:fd1a3aa39eac9df16d88aa254a8fa5ee:a99356c10d69482e9bee53d25c3d05e1$"
 }
 }

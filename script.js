@@ -11,11 +11,29 @@ document.body.appendChild(app.view);
 
 let dungeon, enemy, player;
 let playerTexture, enemyTexture;
-let enemyHealth;
-let intelligence = 10;
-let attackSpeed = 1000;
+let enemyHealthBar;
+let statsWindow;
 let lastAttacked = 0;
 let damageText;
+let battleInProgress = true;
+
+let monsterStats = {
+    maxhp: 3500,
+    hp: 3500,
+    strength: 1,
+    intelligence: 1,
+    agility: 1,
+    experience: 10,
+};
+
+let playerStats = {
+    strength: 1,
+    intelligence: 10,
+    agility: 10,
+    experience: 0,
+    level: 1,
+    unallocated: 0,
+};
 
 loader
     .add("img/bg.png")
@@ -36,7 +54,8 @@ function setup() {
 
     dungeon = new Sprite();
     app.stage.addChild(dungeon);
-    drawEnemyHealth();
+    drawEnemyHealthBar();
+    // drawStatWindow();
     state = world;
     app.ticker.add(delta => tick(delta));
 }
@@ -64,48 +83,79 @@ function tick(delta) {
     state(delta);
 }
 
+function getAttackSpeed() {
+    return playerStats.agility * 100;
+}
+
 // World stage
 function world(delta) {
     if (damageText) {
         damageText.alpha -= 0.04;
     }
-    if (performance.now() - lastAttacked > attackSpeed) {
-        lastAttacked = performance.now();
-        attack();
+    if (performance.now() - lastAttacked > (getAttackSpeed() / 2)) {
+        player.texture = playerTexture["player-stand.png"];
+        enemy.texture = enemyTexture["enemy-stand.png"];
+    }
+    if (performance.now() - lastAttacked > getAttackSpeed()) {
+        if (battleInProgress) {
+            lastAttacked = performance.now();
+            attack();
+        }
     }
 }
 
 // Enemy health
-function drawEnemyHealth() {
-    enemyHealth = new PIXI.Container();
-    enemyHealth.position.set(app.screen.width - 200, 40);
-    app.stage.addChild(enemyHealth);
+function drawEnemyHealthBar() {
+    enemyHealthBar = new PIXI.Container();
+    enemyHealthBar.position.set(500, 70);
+    app.stage.addChild(enemyHealthBar);
 
     let innerBar = new PIXI.Graphics();
     innerBar.beginFill(0x000000);
-    innerBar.drawRect(0, 0, 128, 8);
+    innerBar.drawRect(0, 0, 180, 28);
     innerBar.endFill();
-    enemyHealth.addChild(innerBar);
+    enemyHealthBar.addChild(innerBar);
 
     let outerBar = new PIXI.Graphics();
     outerBar.beginFill(0xFF3300);
-    outerBar.drawRect(0, 0, 128, 8);
+    outerBar.drawRect(0, 0, 180, 28);
     outerBar.endFill();
-    enemyHealth.addChild(outerBar);
+    enemyHealthBar.addChild(outerBar);
 
-    enemyHealth.outer = outerBar;
+    enemyHealthBar.outer = outerBar;
+}
+
+function drawStatWindow() {
+    statsWindow = new PIXI.Container();
+    statsWindow.position.set(30, 30);
+
+    let background = new PIXI.Graphics();
+    background.beginFill(0xdadcac);
+    background.lineStyle(5, 0xdadcac);
+    background.drawRect(0, 0, 400, 390);
+    statsWindow.addChild(background);
+
+    app.stage.addChild(statsWindow);
 }
 
 // Attack enemy
 function attack() {
-    let damage = getDamage(intelligence);
-    let endHealth = enemyHealth.outer.width - Math.floor(damage / 10);
-    if (endHealth <= 0) {
-        enemyHealth.outer.width = 0;
-        enemyDie();
+    player.texture = playerTexture["player-attack.png"];
+    enemy.texture = enemyTexture["enemy-stand.png"];
+    let damage = getDamage();
+    monsterStats.hp -= damage;
+    console.log(monsterStats.hp);
+    console.log(damage);
+    if (monsterStats.hp <= 0) {
+        enemyHealthBar.outer.width = 0;
+        finishBattle();
     } else {
         showDamage(damage);
-        enemyHealth.outer.width -= Math.floor(damage / 10);
+        let damageToPixel = 180 / monsterStats.maxhp;
+        let pixelToTake = damageToPixel * damage;
+        console.log('take ' + damage + ' damage');
+        console.log('take ' + pixelToTake + ' pixel');
+        enemyHealthBar.outer.width -= pixelToTake;
     }
 }
 
@@ -128,16 +178,30 @@ function showDamage(damage) {
     app.stage.addChild(damageText);
 }
 
+function showStats() {
+
+}
+
+function finishBattle() {
+    battleInProgress = false;
+    enemyDie();
+    addExperience();
+}
+
+function addExperience() {
+    playerStats.experience += monsterStats.experience;
+}
+
 // Enemy death
 function enemyDie() {
     console.log('enemy died');
 }
 
 // Calculate damage
-function getDamage(intelligence) {
+function getDamage() {
     let baseDamage = 1;
-    let min = intelligence * 5 + baseDamage;
-    let max = intelligence * 10 + baseDamage;
+    let min = playerStats.intelligence * 5 + baseDamage;
+    let max = playerStats.intelligence * 10 + baseDamage;
     return randomInt(min, max);
 }
 

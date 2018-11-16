@@ -6,8 +6,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":898,"h":1024},
-	"sourceSize": {"w":898,"h":1024},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":898,"h":1024}
 },
 "player-stand.png":
 {
@@ -15,8 +14,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":898,"h":1024},
-	"sourceSize": {"w":898,"h":1024},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":898,"h":1024}
 }},
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
@@ -25,6 +23,6 @@
 	"format": "RGBA8888",
 	"size": {"w":1796,"h":1024},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:1d75bc6ae96d235eea3e1de9c99677ca:2bb61f79f720aaeedacd987bd29ba0e1:86d5339b780aedd87b35e2b7c0a7e11b$"
+	"smartupdate": "$TexturePacker:SmartUpdate:26d004035cb0cf520209fbf6b805dd17:2bb61f79f720aaeedacd987bd29ba0e1:86d5339b780aedd87b35e2b7c0a7e11b$"
 }
 }

@@ -1,0 +1,48 @@
+{"frames": {
+
+"button-down.png":
+{
+	"frame": {"x":0,"y":0,"w":27,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":26},
+	"sourceSize": {"w":27,"h":26},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"button-hover.png":
+{
+	"frame": {"x":27,"y":0,"w":27,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":26},
+	"sourceSize": {"w":27,"h":26},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"button.png":
+{
+	"frame": {"x":54,"y":0,"w":27,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":26},
+	"sourceSize": {"w":27,"h":26},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"frame.png":
+{
+	"frame": {"x":0,"y":26,"w":948,"h":443},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":948,"h":443},
+	"sourceSize": {"w":948,"h":443},
+	"anchor": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "ui.png",
+	"format": "RGBA8888",
+	"size": {"w":948,"h":469},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:a31e4862ebd8b20213be35fbcdedf720:cd8e355d9671d768f407ac42d178c9fd:5b04aa198265472a3c5f56958d78e97b$"
+}
+}
