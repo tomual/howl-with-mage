@@ -6,8 +6,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":26},
-	"sourceSize": {"w":27,"h":26},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":27,"h":26}
 },
 "button-hover.png":
 {
@@ -15,8 +14,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":26},
-	"sourceSize": {"w":27,"h":26},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":27,"h":26}
 },
 "button.png":
 {
@@ -24,8 +22,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":26},
-	"sourceSize": {"w":27,"h":26},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":27,"h":26}
 },
 "frame.png":
 {
@@ -33,8 +30,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":948,"h":443},
-	"sourceSize": {"w":948,"h":443},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":948,"h":443}
 }},
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",

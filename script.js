@@ -6,16 +6,18 @@ let TextureCache = PIXI.utils.TextureCache
 
 PIXI.utils.sayHello();
 
-let app = new Application({ width: 800, height: 450, antialias: true });
+let app = new Application({ width: 950, height: 450, antialias: true });
 document.body.appendChild(app.view);
 
-let dungeon, enemy, player;
+let dungeon, enemy, player, frame;
 let playerTexture, enemyTexture;
 let enemyHealthBar;
 let statsWindow;
 let lastAttacked = 0;
 let damageText;
 let battleInProgress = true;
+
+let strengthText, intelligenceText, agilityText, levelText;
 
 let monsterStats = {
     maxhp: 3500,
@@ -39,18 +41,25 @@ loader
     .add("img/bg.png")
     .add("img/player.json")
     .add("img/enemy.json")
+    .add("img/ui.json")
     .load(setup);
 
 // Initialize
 function setup() {
     let bg = new Sprite(resources["img/bg.png"].texture);
+    bg.height = 400;
+    bg.width = 620;
+    bg.x = 20;
+    bg.y = 20;
     app.stage.addChild(bg);
 
     playerTexture = resources["img/player.json"].textures;
     enemyTexture = resources["img/enemy.json"].textures;
+    uiTexture = resources["img/ui.json"].textures;
 
     initPlayer();
     initEnemy();
+    initUi();
 
     dungeon = new Sprite();
     app.stage.addChild(dungeon);
@@ -60,21 +69,39 @@ function setup() {
     app.ticker.add(delta => tick(delta));
 }
 
+function initUi() {
+    frame = new Sprite(uiTexture["frame.png"]);
+    frame.x = 0;
+    frame.y = 0;
+    app.stage.addChild(frame);
+
+    let style = new PIXI.TextStyle({
+        fontFamily: "Arial",
+        fontSize: 14,
+        fill: "#000",
+    });
+
+    let nameText = new PIXI.Text("tom", style);
+    nameText.x = 722;
+    nameText.y = 95;
+    app.stage.addChild(nameText);
+}
+
 function initPlayer() {
     player = new Sprite(playerTexture["player-stand.png"]);
-    player.height = player.height / 3;
-    player.width = player.width / 3;
-    player.x = 230;
-    player.y = 250;
+    player.height = player.height / 4;
+    player.width = player.width / 4;
+    player.x = 85;
+    player.y = 135;
+    app.stage.addChild(player);
 }
 
 function initEnemy() {
     enemy = new Sprite(enemyTexture["enemy-stand.png"]);
-    enemy.height = enemy.height / 3;
-    enemy.width = enemy.width / 3;
-    enemy.x = 590;
-    enemy.y = 250;
-    app.stage.addChild(player);
+    enemy.height = enemy.height / 4;
+    enemy.width = enemy.width / 4;
+    enemy.x = 370;
+    enemy.y = 140;
     app.stage.addChild(enemy);
 }
 
@@ -107,18 +134,18 @@ function world(delta) {
 // Enemy health
 function drawEnemyHealthBar() {
     enemyHealthBar = new PIXI.Container();
-    enemyHealthBar.position.set(500, 70);
+    enemyHealthBar.position.set(390, 100);
     app.stage.addChild(enemyHealthBar);
 
     let innerBar = new PIXI.Graphics();
     innerBar.beginFill(0x000000);
-    innerBar.drawRect(0, 0, 180, 28);
+    innerBar.drawRect(0, 0, 180, 24);
     innerBar.endFill();
     enemyHealthBar.addChild(innerBar);
 
     let outerBar = new PIXI.Graphics();
     outerBar.beginFill(0xFF3300);
-    outerBar.drawRect(0, 0, 180, 28);
+    outerBar.drawRect(0, 0, 180, 24);
     outerBar.endFill();
     enemyHealthBar.addChild(outerBar);
 
@@ -141,7 +168,7 @@ function drawStatWindow() {
 // Attack enemy
 function attack() {
     player.texture = playerTexture["player-attack.png"];
-    enemy.texture = enemyTexture["enemy-stand.png"];
+    enemy.texture = enemyTexture["enemy-damage.png"];
     let damage = getDamage();
     monsterStats.hp -= damage;
     console.log(monsterStats.hp);
