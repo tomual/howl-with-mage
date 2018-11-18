@@ -11,7 +11,7 @@ document.body.appendChild(app.view);
 
 let dungeon, enemy, player, frame;
 let playerTexture, enemyTexture;
-let enemyHealthBar;
+let enemyHealthBar, experienceBar;
 let statsWindow;
 let lastAttacked = 0;
 let damageText;
@@ -26,14 +26,15 @@ let monsterStats = {
     strength: 1,
     intelligence: 1,
     agility: 1,
-    experience: 10,
+    experience: 50,
 };
 
 let playerStats = {
     strength: 1,
-    intelligence: 10,
-    agility: 10,
+    intelligence: 100,
+    agility: 30,
     experience: 0,
+    maxExperience: 200,
     level: 1,
     unallocated: 0,
 };
@@ -65,12 +66,12 @@ function setup() {
     dungeon = new Sprite();
     app.stage.addChild(dungeon);
     drawEnemyHealthBar();
-    // drawStatWindow();
     state = world;
     app.ticker.add(delta => tick(delta));
 }
 
 function initUi() {
+    drawExperienceBar();
     frame = new Sprite(uiTexture["frame.png"]);
     frame.x = 0;
     frame.y = 0;
@@ -87,39 +88,49 @@ function initUi() {
     nameLabel.y = 95;
     app.stage.addChild(nameLabel);
 
+    let levelLabel = new PIXI.Text("Lv.", style);
+    levelLabel.x = 722;
+    levelLabel.y = 125;
+    app.stage.addChild(levelLabel);
+
+    levelText = new PIXI.Text(playerStats.level, style);
+    levelText.x = 748;
+    levelText.y = 125;
+    app.stage.addChild(levelText);
+
     let strengthLabel = new PIXI.Text("Strength", style);
     strengthLabel.x = 722;
-    strengthLabel.y = 145;
+    strengthLabel.y = 165;
     app.stage.addChild(strengthLabel);
 
     let intelligenceLabel = new PIXI.Text("Intelligence", style);
     intelligenceLabel.x = 722;
-    intelligenceLabel.y = 175;
+    intelligenceLabel.y = 195;
     app.stage.addChild(intelligenceLabel);
 
     let agilityLabel = new PIXI.Text("Agility", style);
     agilityLabel.x = 722;
-    agilityLabel.y = 205;
+    agilityLabel.y = 225;
     app.stage.addChild(agilityLabel);
 
     strengthText = new PIXI.Text(playerStats.strength, style);
     strengthText.x = 822;
-    strengthText.y = 145;
+    strengthText.y = 165;
     app.stage.addChild(strengthText);
 
     intelligenceText = new PIXI.Text(playerStats.intelligence, style);
     intelligenceText.x = 822;
-    intelligenceText.y = 175;
+    intelligenceText.y = 195;
     app.stage.addChild(intelligenceText);
 
     agilityText = new PIXI.Text(playerStats.agility, style);
     agilityText.x = 822;
-    agilityText.y = 205;
+    agilityText.y = 225;
     app.stage.addChild(agilityText);
 
     strengthButton = new Sprite(uiTexture["button.png"]);
     strengthButton.x = 868;
-    strengthButton.y = 145 - 4;
+    strengthButton.y = 165 - 4;
     strengthButton.interactive = true;
     strengthButton.buttonMode = true;
     strengthButton.statType = 'strength';
@@ -133,7 +144,7 @@ function initUi() {
 
     intelligenceButton = new Sprite(uiTexture["button.png"]);
     intelligenceButton.x = 868;
-    intelligenceButton.y = 175 - 4;
+    intelligenceButton.y = 195 - 4;
     intelligenceButton.interactive = true;
     intelligenceButton.buttonMode = true;
     intelligenceButton.statType = 'intelligence';
@@ -147,7 +158,7 @@ function initUi() {
 
     agilityButton = new Sprite(uiTexture["button.png"]);
     agilityButton.x = 868;
-    agilityButton.y = 205 - 4;
+    agilityButton.y = 225 - 4;
     agilityButton.interactive = true;
     agilityButton.buttonMode = true;
     agilityButton.statType = 'agility';
@@ -225,6 +236,26 @@ function drawEnemyHealthBar() {
     enemyHealthBar.outer = outerBar;
 }
 
+function drawExperienceBar() {
+    experienceBar = new PIXI.Container();
+    experienceBar.position.set(684, 18);
+    app.stage.addChild(experienceBar);
+
+    let innerBar = new PIXI.Graphics();
+    innerBar.beginFill(0x506171);
+    innerBar.drawRect(0, 0, 244, 45);
+    innerBar.endFill();
+    experienceBar.addChild(innerBar);
+
+    let outerBar = new PIXI.Graphics();
+    outerBar.beginFill(0x6eb6f5);
+    outerBar.drawRect(0, 0, 1, 45);
+    outerBar.endFill();
+    experienceBar.addChild(outerBar);
+
+    experienceBar.outer = outerBar;
+}
+
 function drawStatWindow() {
     statsWindow = new PIXI.Container();
     statsWindow.position.set(30, 30);
@@ -286,15 +317,34 @@ function finishBattle() {
     battleInProgress = false;
     enemyDie();
     addExperience();
+    enemySpawn();
 }
 
 function addExperience() {
     playerStats.experience += monsterStats.experience;
+    let experienceToPixel = 244 / playerStats.maxExperience;
+    let pixelToAdd = experienceToPixel * playerStats.experience;
+    experienceBar.outer.width = pixelToAdd;
+
+    if (playerStats.experience >= playerStats.maxExperience) {
+        ++playerStats.level;
+        playerStats.experience = 0;
+        levelText.text = playerStats.level;
+        experienceBar.outer.width = 0;
+    }
 }
 
 // Enemy death
 function enemyDie() {
     console.log('enemy died');
+}
+
+// Enemy spawn
+function enemySpawn() {
+    console.log('enemy died');
+    monsterStats.hp = monsterStats.maxhp;
+    enemyHealthBar.outer.width = 180;
+    battleInProgress = true;
 }
 
 // Calculate damage
@@ -311,7 +361,7 @@ function randomInt(min, max) {
 }
 
 function levelStat(stat) {
-	++playerStats[stat];
-	let statText = stat + 'Text';
-	eval(statText).text = playerStats[stat];
+    ++playerStats[stat];
+    let statText = stat + 'Text';
+    eval(statText).text = playerStats[stat];
 }
