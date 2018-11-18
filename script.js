@@ -6,7 +6,7 @@ let TextureCache = PIXI.utils.TextureCache
 
 PIXI.utils.sayHello();
 
-let app = new Application({ width: 950, height: 450, antialias: true });
+let app = new Application({ width: 950, height: 450, antialias: true, transparent: true });
 document.body.appendChild(app.view);
 
 let dungeon, enemy, player, frame;
@@ -18,6 +18,7 @@ let damageText;
 let battleInProgress = true;
 
 let strengthText, intelligenceText, agilityText, levelText;
+let strengthButton, intelligenceButton, agilityButton;
 
 let monsterStats = {
     maxhp: 3500,
@@ -81,10 +82,82 @@ function initUi() {
         fill: "#000",
     });
 
-    let nameText = new PIXI.Text("tom", style);
-    nameText.x = 722;
-    nameText.y = 95;
-    app.stage.addChild(nameText);
+    let nameLabel = new PIXI.Text("tom", style);
+    nameLabel.x = 722;
+    nameLabel.y = 95;
+    app.stage.addChild(nameLabel);
+
+    let strengthLabel = new PIXI.Text("Strength", style);
+    strengthLabel.x = 722;
+    strengthLabel.y = 145;
+    app.stage.addChild(strengthLabel);
+
+    let intelligenceLabel = new PIXI.Text("Intelligence", style);
+    intelligenceLabel.x = 722;
+    intelligenceLabel.y = 175;
+    app.stage.addChild(intelligenceLabel);
+
+    let agilityLabel = new PIXI.Text("Agility", style);
+    agilityLabel.x = 722;
+    agilityLabel.y = 205;
+    app.stage.addChild(agilityLabel);
+
+    strengthText = new PIXI.Text(playerStats.strength, style);
+    strengthText.x = 822;
+    strengthText.y = 145;
+    app.stage.addChild(strengthText);
+
+    intelligenceText = new PIXI.Text(playerStats.intelligence, style);
+    intelligenceText.x = 822;
+    intelligenceText.y = 175;
+    app.stage.addChild(intelligenceText);
+
+    agilityText = new PIXI.Text(playerStats.agility, style);
+    agilityText.x = 822;
+    agilityText.y = 205;
+    app.stage.addChild(agilityText);
+
+    strengthButton = new Sprite(uiTexture["button.png"]);
+    strengthButton.x = 868;
+    strengthButton.y = 145 - 4;
+    strengthButton.interactive = true;
+    strengthButton.buttonMode = true;
+    strengthButton.statType = 'strength';
+    strengthButton
+        .on('pointerdown', onSkillButtonDown)
+        .on('pointerup', onSkillButtonUp)
+        .on('pointerupoutside', onSkillButtonUp)
+        .on('pointerover', onSkillButtonOver)
+        .on('pointerout', onSkillButtonOut);
+    app.stage.addChild(strengthButton);
+
+    intelligenceButton = new Sprite(uiTexture["button.png"]);
+    intelligenceButton.x = 868;
+    intelligenceButton.y = 175 - 4;
+    intelligenceButton.interactive = true;
+    intelligenceButton.buttonMode = true;
+    intelligenceButton.statType = 'intelligence';
+    intelligenceButton
+        .on('pointerdown', onSkillButtonDown)
+        .on('pointerup', onSkillButtonUp)
+        .on('pointerupoutside', onSkillButtonUp)
+        .on('pointerover', onSkillButtonOver)
+        .on('pointerout', onSkillButtonOut);
+    app.stage.addChild(intelligenceButton);
+
+    agilityButton = new Sprite(uiTexture["button.png"]);
+    agilityButton.x = 868;
+    agilityButton.y = 205 - 4;
+    agilityButton.interactive = true;
+    agilityButton.buttonMode = true;
+    agilityButton.statType = 'agility';
+    agilityButton
+        .on('pointerdown', onSkillButtonDown)
+        .on('pointerup', onSkillButtonUp)
+        .on('pointerupoutside', onSkillButtonUp)
+        .on('pointerover', onSkillButtonOver)
+        .on('pointerout', onSkillButtonOut);
+    app.stage.addChild(agilityButton);
 }
 
 function initPlayer() {
@@ -111,7 +184,7 @@ function tick(delta) {
 }
 
 function getAttackSpeed() {
-    return playerStats.agility * 100;
+    return 20000 / playerStats.agility;
 }
 
 // World stage
@@ -171,8 +244,8 @@ function attack() {
     enemy.texture = enemyTexture["enemy-damage.png"];
     let damage = getDamage();
     monsterStats.hp -= damage;
-    console.log(monsterStats.hp);
-    console.log(damage);
+    // console.log(monsterStats.hp);
+    // console.log(damage);
     if (monsterStats.hp <= 0) {
         enemyHealthBar.outer.width = 0;
         finishBattle();
@@ -180,8 +253,8 @@ function attack() {
         showDamage(damage);
         let damageToPixel = 180 / monsterStats.maxhp;
         let pixelToTake = damageToPixel * damage;
-        console.log('take ' + damage + ' damage');
-        console.log('take ' + pixelToTake + ' pixel');
+        // console.log('take ' + damage + ' damage');
+        // console.log('take ' + pixelToTake + ' pixel');
         enemyHealthBar.outer.width -= pixelToTake;
     }
 }
@@ -235,4 +308,10 @@ function getDamage() {
 // Random number
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function levelStat(stat) {
+	++playerStats[stat];
+	let statText = stat + 'Text';
+	eval(statText).text = playerStats[stat];
 }

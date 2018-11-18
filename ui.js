@@ -1,31 +1,34 @@
-function onButtonDown() {
+function onSkillButtonDown() {
     this.isdown = true;
-    this.texture = textureButtonDown;
+    this.texture = uiTexture["button-down.png"];
     this.alpha = 1;
 }
 
-function onButtonUp() {
+function onSkillButtonUp() {
     this.isdown = false;
     if (this.isOver) {
-        this.texture = textureButtonOver;
+        this.texture = uiTexture["button-hover.png"];
+        let stat = this.statType;
+        console.log(stat);
+        levelStat(stat);
     }
     else {
-        this.texture = textureButton;
+        this.texture = uiTexture["button.png"];
     }
 }
 
-function onButtonOver() {
+function onSkillButtonOver() {
     this.isOver = true;
     if (this.isdown) {
         return;
     }
-    this.texture = textureButtonOver;
+    this.texture = uiTexture["button-hover.png"];
 }
 
-function onButtonOut() {
+function onSkillButtonOut() {
     this.isOver = false;
     if (this.isdown) {
         return;
     }
-    this.texture = textureButton;
+    this.texture = uiTexture["button.png"];
 }
