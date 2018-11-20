@@ -37,6 +37,7 @@ let playerStats = {
     maxExperience: 200,
     level: 1,
     unallocated: 0,
+    points: 0,
 };
 
 loader
@@ -225,36 +226,20 @@ function despawnEnemy(delta) {
             enemy.alpha -= 0.04;
         } else {
             enemy.texture = enemyTexture["enemy-stand.png"];
-            enemy.y = -200;
-            dropSpeed = 1;
-            enemy.alpha = 1;
             state = spawnEnemy;
         }
     }
 }
 
-let dropSpeed = 1;
 function spawnEnemy(delta) {
-    if (damageText && damageText.alpha > 0) {
-        damageText.alpha -= 0.04;
-    }
     if (performance.now() - lastAttacked > 2000) {
-        if (enemy.y < 140) {
-            console.log(performance.now());
-            let dropDistance = 2 + dropSpeed;
-            if ((enemy.y + dropDistance) > 140) {
-                enemy.y = 140;
-            } else {
-                enemy.y += dropDistance;
-            }
-            dropSpeed += 4;
+        if (enemy.alpha <= 1) {
+            enemy.alpha += 0.04;
         } else {
             monsterStats.hp = monsterStats.maxhp;
             enemyHealthBar.outer.width = 180;
             battleInProgress = true;
-            if (performance.now() - lastAttacked > 4000) {
-                state = battle;
-            }
+            state = battle;
         }
     }
 }
@@ -343,24 +328,20 @@ function attack() {
 function showDamage(damage) {
     let style = new PIXI.TextStyle({
         fontFamily: "Arial",
-        fontSize: 36,
+        fontSize: 24,
         fill: "white",
         stroke: '#000',
         strokeThickness: 4,
         dropShadow: true,
-        dropShadowColor: "#000000",
+        dropShadowColor: "#8c6951",
         dropShadowBlur: 4,
         dropShadowAngle: Math.PI / 2,
         dropShadowDistance: 3,
     });
     damageText = new PIXI.Text(damage, style);
-    damageText.x = 500;
+    damageText.x = 420;
     damageText.y = 200;
     app.stage.addChild(damageText);
-}
-
-function showStats() {
-
 }
 
 function finishBattle() {
@@ -378,6 +359,7 @@ function addExperience() {
 
     if (playerStats.experience >= playerStats.maxExperience) {
         ++playerStats.level;
+        ++playerStats.points;
         playerStats.experience = 0;
         levelText.text = playerStats.level;
         experienceBar.outer.width = 0;
@@ -402,6 +384,7 @@ function randomInt(min, max) {
 }
 
 function levelStat(stat) {
+    --playerStats.points;
     ++playerStats[stat];
     let statText = stat + 'Text';
     eval(statText).text = playerStats[stat];
