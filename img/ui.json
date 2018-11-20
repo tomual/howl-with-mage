@@ -24,21 +24,37 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":26},
 	"sourceSize": {"w":27,"h":26}
 },
+"enemy-hp.png":
+{
+	"frame": {"x":81,"y":0,"w":196,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":49},
+	"sourceSize": {"w":196,"h":49}
+},
 "frame.png":
 {
-	"frame": {"x":0,"y":26,"w":948,"h":443},
+	"frame": {"x":0,"y":69,"w":948,"h":443},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":948,"h":443},
 	"sourceSize": {"w":948,"h":443}
+},
+"textbox.png":
+{
+	"frame": {"x":277,"y":0,"w":279,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":279,"h":69},
+	"sourceSize": {"w":279,"h":69}
 }},
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
 	"image": "ui.png",
 	"format": "RGBA8888",
-	"size": {"w":948,"h":469},
+	"size": {"w":948,"h":512},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:a31e4862ebd8b20213be35fbcdedf720:cd8e355d9671d768f407ac42d178c9fd:5b04aa198265472a3c5f56958d78e97b$"
+	"smartupdate": "$TexturePacker:SmartUpdate:c84c85318c95134bfbc238aa14c8eb88:d61ace1a4e2c44670038ebc6addf5917:5b04aa198265472a3c5f56958d78e97b$"
 }
 }

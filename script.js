@@ -66,7 +66,7 @@ function setup() {
     dungeon = new Sprite();
     app.stage.addChild(dungeon);
     drawEnemyHealthBar();
-    state = world;
+    state = battle;
     app.ticker.add(delta => tick(delta));
 }
 
@@ -199,8 +199,8 @@ function getAttackSpeed() {
 }
 
 // World stage
-function world(delta) {
-    if (damageText) {
+function battle(delta) {
+    if (damageText && damageText.alpha > 0) {
         damageText.alpha -= 0.04;
     }
     if (performance.now() - lastAttacked > (getAttackSpeed() / 2)) {
@@ -215,23 +215,73 @@ function world(delta) {
     }
 }
 
+function despawnEnemy(delta) {
+    if (damageText && damageText.alpha > 0) {
+        damageText.alpha -= 0.04;
+    }
+    if (performance.now() - lastAttacked > 1000) {
+        player.texture = playerTexture["player-stand.png"];
+        if (enemy.alpha > 0) {
+            enemy.alpha -= 0.04;
+        } else {
+            enemy.texture = enemyTexture["enemy-stand.png"];
+            enemy.y = -200;
+            dropSpeed = 1;
+            enemy.alpha = 1;
+            state = spawnEnemy;
+        }
+    }
+}
+
+let dropSpeed = 1;
+function spawnEnemy(delta) {
+    if (damageText && damageText.alpha > 0) {
+        damageText.alpha -= 0.04;
+    }
+    if (performance.now() - lastAttacked > 2000) {
+        if (enemy.y < 140) {
+            console.log(performance.now());
+            let dropDistance = 2 + dropSpeed;
+            if ((enemy.y + dropDistance) > 140) {
+                enemy.y = 140;
+            } else {
+                enemy.y += dropDistance;
+            }
+            dropSpeed += 4;
+        } else {
+            monsterStats.hp = monsterStats.maxhp;
+            enemyHealthBar.outer.width = 180;
+            battleInProgress = true;
+            if (performance.now() - lastAttacked > 4000) {
+                state = battle;
+            }
+        }
+    }
+}
+
 // Enemy health
 function drawEnemyHealthBar() {
     enemyHealthBar = new PIXI.Container();
     enemyHealthBar.position.set(390, 100);
     app.stage.addChild(enemyHealthBar);
 
+
     let innerBar = new PIXI.Graphics();
-    innerBar.beginFill(0x000000);
+    innerBar.beginFill(0x506171);
     innerBar.drawRect(0, 0, 180, 24);
     innerBar.endFill();
     enemyHealthBar.addChild(innerBar);
 
     let outerBar = new PIXI.Graphics();
-    outerBar.beginFill(0xFF3300);
+    outerBar.beginFill(0xf56e6e);
     outerBar.drawRect(0, 0, 180, 24);
     outerBar.endFill();
     enemyHealthBar.addChild(outerBar);
+
+    let healthFrame = new Sprite(uiTexture["enemy-hp.png"]);
+    healthFrame.x = -10;
+    healthFrame.y = -13;
+    enemyHealthBar.addChild(healthFrame);
 
     enemyHealthBar.outer = outerBar;
 }
@@ -275,13 +325,13 @@ function attack() {
     enemy.texture = enemyTexture["enemy-damage.png"];
     let damage = getDamage();
     monsterStats.hp -= damage;
+    showDamage(damage);
     // console.log(monsterStats.hp);
     // console.log(damage);
     if (monsterStats.hp <= 0) {
         enemyHealthBar.outer.width = 0;
         finishBattle();
     } else {
-        showDamage(damage);
         let damageToPixel = 180 / monsterStats.maxhp;
         let pixelToTake = damageToPixel * damage;
         // console.log('take ' + damage + ' damage');
@@ -315,9 +365,9 @@ function showStats() {
 
 function finishBattle() {
     battleInProgress = false;
-    enemyDie();
     addExperience();
-    enemySpawn();
+    state = despawnEnemy;
+    // enemySpawn();
 }
 
 function addExperience() {
@@ -334,17 +384,8 @@ function addExperience() {
     }
 }
 
-// Enemy death
-function enemyDie() {
-    console.log('enemy died');
-}
-
 // Enemy spawn
 function enemySpawn() {
-    console.log('enemy died');
-    monsterStats.hp = monsterStats.maxhp;
-    enemyHealthBar.outer.width = 180;
-    battleInProgress = true;
 }
 
 // Calculate damage
