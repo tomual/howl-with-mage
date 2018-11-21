@@ -1,9 +1,58 @@
+@import url(https://fonts.googleapis.com/css?family=Abel);
+@import url(https://fonts.googleapis.com/css?family=Lato);
+@font-face {
+  font-family: 'Abel'
+}
+
+@font-face {
+  font-family: 'Lato'
+}
+
 body {
     background: #86a1b9;
+    background-image: url('img/blue.jpg');
+    background-size: cover;
 }
 
 canvas {
     margin: auto;
     display: block;
     margin-top: 2rem;
+}
+
+.name-frame {
+	width: 279px;
+	height: 69px;
+	background-image: url('img/textbox.png');
+    pointer-events: none;
+    z-index: 2;
+    position: absolute;
+}
+
+.ask-name {
+    left: 50%;
+    margin-left: -140px;
+    width: 280px;
+    height: 300px;
+    position: absolute;
+    z-index: 1;
+}
+
+input#name {
+    position: relative;
+    top: 18px;
+    left: 15px;
+    line-height: 32px;
+    width: 240px;
+    padding-left: 10px;
+    z-index: 1;
+}
+
+label {
+	color:#FFF;
+	font-family: 'Abel';
+	font-weight: bold;
+	font-size: 18px;
+	text-align: center;
+	letter-spacing: 0.5px;
 }

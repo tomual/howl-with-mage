@@ -1,0 +1,28 @@
+{"frames": {
+
+"bolt.png":
+{
+	"frame": {"x":0,"y":0,"w":49,"h":47},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":47},
+	"sourceSize": {"w":49,"h":47}
+},
+"hit.png":
+{
+	"frame": {"x":0,"y":47,"w":52,"h":50},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":52,"h":50},
+	"sourceSize": {"w":52,"h":50}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "particles.png",
+	"format": "RGBA8888",
+	"size": {"w":52,"h":97},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:8e572679da1b23ea9ed6e48a0ab5e477:5ed00ee1325b01ba3f680a011f58530f:767f0aa26e08023d62afa20c0c952bea$"
+}
+}

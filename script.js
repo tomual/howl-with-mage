@@ -9,20 +9,22 @@ PIXI.utils.sayHello();
 let app = new Application({ width: 950, height: 450, antialias: true, transparent: true });
 document.body.appendChild(app.view);
 
+let name;
 let dungeon, enemy, player, frame;
 let playerTexture, enemyTexture;
 let enemyHealthBar, experienceBar;
 let statsWindow;
 let lastAttacked = 0;
-let damageText;
+let damageText, damageParticle, spellParticle;
 let battleInProgress = true;
+let nameInput, nameEnteredTime;
 
 let strengthText, intelligenceText, agilityText, levelText;
 let strengthButton, intelligenceButton, agilityButton;
 
 let monsterStats = {
-    maxhp: 3500,
-    hp: 3500,
+    maxhp: 300,
+    hp: 300,
     strength: 1,
     intelligence: 1,
     agility: 1,
@@ -31,8 +33,8 @@ let monsterStats = {
 
 let playerStats = {
     strength: 1,
-    intelligence: 100,
-    agility: 30,
+    intelligence: 10,
+    agility: 10,
     experience: 0,
     maxExperience: 200,
     level: 1,
@@ -40,34 +42,29 @@ let playerStats = {
     points: 0,
 };
 
-loader
-    .add("img/bg.png")
-    .add("img/player.json")
-    .add("img/enemy.json")
-    .add("img/ui.json")
-    .load(setup);
+WebFont.load({
+    google: {
+        families: ['Abel']
+    },
+    active: e => {
+        loader
+            .add("img/bg.png")
+            .add("img/player.json")
+            .add("img/enemy.json")
+            .add("img/particles.json")
+            .add("img/ui.json")
+            .load(setup);
+    }
+});
 
 // Initialize
 function setup() {
-    let bg = new Sprite(resources["img/bg.png"].texture);
-    bg.height = 400;
-    bg.width = 620;
-    bg.x = 20;
-    bg.y = 20;
-    app.stage.addChild(bg);
-
     playerTexture = resources["img/player.json"].textures;
     enemyTexture = resources["img/enemy.json"].textures;
     uiTexture = resources["img/ui.json"].textures;
+    particlesTexture = resources["img/particles.json"].textures;
 
-    initPlayer();
-    initEnemy();
-    initUi();
-
-    dungeon = new Sprite();
-    app.stage.addChild(dungeon);
-    drawEnemyHealthBar();
-    state = battle;
+    state = askName;
     app.ticker.add(delta => tick(delta));
 }
 
@@ -79,12 +76,19 @@ function initUi() {
     app.stage.addChild(frame);
 
     let style = new PIXI.TextStyle({
-        fontFamily: "Arial",
-        fontSize: 14,
-        fill: "#000",
+        fontFamily: "Abel",
+        fontSize: 17,
+        fill: "#3e3832",
     });
 
-    let nameLabel = new PIXI.Text("tom", style);
+    let boldStyle = new PIXI.TextStyle({
+        fontWeight: "bold",
+        fontFamily: "Abel",
+        fontSize: 17,
+        fill: "#3e3832",
+    });
+
+    let nameLabel = new PIXI.Text(name, boldStyle);
     nameLabel.x = 722;
     nameLabel.y = 95;
     app.stage.addChild(nameLabel);
@@ -99,17 +103,17 @@ function initUi() {
     levelText.y = 125;
     app.stage.addChild(levelText);
 
-    let strengthLabel = new PIXI.Text("Strength", style);
+    let strengthLabel = new PIXI.Text("Strength", boldStyle);
     strengthLabel.x = 722;
     strengthLabel.y = 165;
     app.stage.addChild(strengthLabel);
 
-    let intelligenceLabel = new PIXI.Text("Intelligence", style);
+    let intelligenceLabel = new PIXI.Text("Intelligence", boldStyle);
     intelligenceLabel.x = 722;
     intelligenceLabel.y = 195;
     app.stage.addChild(intelligenceLabel);
 
-    let agilityLabel = new PIXI.Text("Agility", style);
+    let agilityLabel = new PIXI.Text("Agility", boldStyle);
     agilityLabel.x = 722;
     agilityLabel.y = 225;
     app.stage.addChild(agilityLabel);
@@ -141,6 +145,7 @@ function initUi() {
         .on('pointerupoutside', onSkillButtonUp)
         .on('pointerover', onSkillButtonOver)
         .on('pointerout', onSkillButtonOut);
+    strengthButton.visible = false;
     app.stage.addChild(strengthButton);
 
     intelligenceButton = new Sprite(uiTexture["button.png"]);
@@ -155,6 +160,7 @@ function initUi() {
         .on('pointerupoutside', onSkillButtonUp)
         .on('pointerover', onSkillButtonOver)
         .on('pointerout', onSkillButtonOut);
+    intelligenceButton.visible = false;
     app.stage.addChild(intelligenceButton);
 
     agilityButton = new Sprite(uiTexture["button.png"]);
@@ -169,6 +175,7 @@ function initUi() {
         .on('pointerupoutside', onSkillButtonUp)
         .on('pointerover', onSkillButtonOver)
         .on('pointerout', onSkillButtonOut);
+    agilityButton.visible = false;
     app.stage.addChild(agilityButton);
 }
 
@@ -190,6 +197,20 @@ function initEnemy() {
     app.stage.addChild(enemy);
 }
 
+function initParticles() {
+    spellParticle = new Sprite(particlesTexture["bolt.png"]);
+    spellParticle.x = 240;
+    spellParticle.y = 170;
+    spellParticle.alpha = 0;
+    app.stage.addChild(spellParticle);
+
+    damageParticle = new Sprite(particlesTexture["hit.png"]);
+    damageParticle.x = 430;
+    damageParticle.y = 200;
+    damageParticle.alpha = 0;
+    app.stage.addChild(damageParticle);
+}
+
 // 60 times a second
 function tick(delta) {
     state(delta);
@@ -199,10 +220,40 @@ function getAttackSpeed() {
     return 20000 / playerStats.agility;
 }
 
+function askName(delta) {
+    if (name) {
+        nameEnteredTime = performance.now();
+        let bg = new Sprite(resources["img/bg.png"].texture);
+        bg.height = 400;
+        bg.width = 620;
+        bg.x = 20;
+        bg.y = 20;
+        app.stage.addChild(bg);
+
+        initPlayer();
+        initEnemy();
+        initUi();
+        initParticles();
+        drawEnemyHealthBar();
+        app.stage.alpha = 0;
+        state = showGame;
+    }
+}
+
+function showGame(delta) {
+    if (performance.now() - nameEnteredTime < 2000) {
+        app.stage.alpha += 0.04;
+    } else {
+        state = battle;
+    }
+}
+
 // World stage
 function battle(delta) {
     if (damageText && damageText.alpha > 0) {
         damageText.alpha -= 0.04;
+        damageParticle.alpha -= 0.04;
+        spellParticle.alpha -= 0.04;
     }
     if (performance.now() - lastAttacked > (getAttackSpeed() / 2)) {
         player.texture = playerTexture["player-stand.png"];
@@ -219,6 +270,8 @@ function battle(delta) {
 function despawnEnemy(delta) {
     if (damageText && damageText.alpha > 0) {
         damageText.alpha -= 0.04;
+        damageParticle.alpha -= 0.04;
+        spellParticle.alpha -= 0.04;
     }
     if (performance.now() - lastAttacked > 1000) {
         player.texture = playerTexture["player-stand.png"];
@@ -311,6 +364,7 @@ function attack() {
     let damage = getDamage();
     monsterStats.hp -= damage;
     showDamage(damage);
+    spellParticle.alpha = 1;
     // console.log(monsterStats.hp);
     // console.log(damage);
     if (monsterStats.hp <= 0) {
@@ -327,8 +381,9 @@ function attack() {
 
 function showDamage(damage) {
     let style = new PIXI.TextStyle({
-        fontFamily: "Arial",
+        fontFamily: "Abel",
         fontSize: 24,
+        fontWeight: "bold",
         fill: "white",
         stroke: '#000',
         strokeThickness: 4,
@@ -342,13 +397,13 @@ function showDamage(damage) {
     damageText.x = 420;
     damageText.y = 200;
     app.stage.addChild(damageText);
+    damageParticle.alpha = 1;
 }
 
 function finishBattle() {
     battleInProgress = false;
     addExperience();
     state = despawnEnemy;
-    // enemySpawn();
 }
 
 function addExperience() {
@@ -363,16 +418,16 @@ function addExperience() {
         playerStats.experience = 0;
         levelText.text = playerStats.level;
         experienceBar.outer.width = 0;
+        updateSkillButton();
     }
 }
 
 // Enemy spawn
-function enemySpawn() {
-}
+function enemySpawn() {}
 
 // Calculate damage
 function getDamage() {
-    let baseDamage = 1;
+    let baseDamage = playerStats.strength;
     let min = playerStats.intelligence * 5 + baseDamage;
     let max = playerStats.intelligence * 10 + baseDamage;
     return randomInt(min, max);
@@ -388,4 +443,25 @@ function levelStat(stat) {
     ++playerStats[stat];
     let statText = stat + 'Text';
     eval(statText).text = playerStats[stat];
+    updateSkillButton();
 }
+
+function updateSkillButton() {
+    if (playerStats.points) {
+        strengthButton.visible = true;
+        agilityButton.visible = true;
+        intelligenceButton.visible = true;
+    } else {
+        strengthButton.visible = false;
+        agilityButton.visible = false;
+        intelligenceButton.visible = false;
+    }
+}
+
+$('#name').keyup(function(e){
+    if(e.keyCode == 13) {
+        $('.ask-name').fadeOut('slow', function () {
+            name = $('#name').val();
+        });
+    }
+});
