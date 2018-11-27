@@ -177,6 +177,26 @@ function initUi() {
         .on('pointerout', onSkillButtonOut);
     agilityButton.visible = false;
     app.stage.addChild(agilityButton);
+
+    let damageStyle = new PIXI.TextStyle({
+            fontFamily: "Abel",
+            fontSize: 24,
+            fontWeight: "bold",
+            fill: "white",
+            stroke: '#000',
+            strokeThickness: 4,
+            dropShadow: true,
+            dropShadowColor: "#8c6951",
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 2,
+            dropShadowDistance: 3,
+        });
+
+    damageText = new PIXI.Text(0, damageStyle);
+    damageText.alpha = 0;
+    damageText.x = 420;
+    damageText.y = 200;
+    app.stage.addChild(damageText);
 }
 
 function initPlayer() {
@@ -272,7 +292,7 @@ function despawnEnemy(delta) {
     if (damageText && damageText.alpha > 0) {
         damageText.alpha -= 0.04;
         damageParticle.alpha -= 0.04;
-        spellParticle.alpha -= 0.04;
+        spellParticle.alpha -= 0.01;
     }
     if (performance.now() - lastAttacked > 1000) {
         player.texture = playerTexture["player-stand.png"];
@@ -368,8 +388,6 @@ function attack() {
     monsterStats.hp -= damage;
     showDamage(damage);
     spellParticle.alpha = 1;
-    // console.log(monsterStats.hp);
-    // console.log(damage);
     if (monsterStats.hp <= 0) {
         enemyHealthBar.outer.width = 0;
         finishBattle();
@@ -397,10 +415,8 @@ let damageStyle = new PIXI.TextStyle({
     });
 
 function showDamage(damage) {
-    damageText = new PIXI.Text(damage, damageStyle);
-    damageText.x = 420;
-    damageText.y = 200;
-    app.stage.addChild(damageText);
+    damageText.text = damage;
+    damageText.alpha = 1;
     damageParticle.alpha = 1;
 }
 
