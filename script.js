@@ -36,7 +36,7 @@ let playerStats = {
     intelligence: 10,
     agility: 10,
     experience: 0,
-    maxExperience: 200,
+    maxExperience: 100,
     level: 1,
     unallocated: 0,
     points: 0,
@@ -217,7 +217,7 @@ function tick(delta) {
 }
 
 function getAttackSpeed() {
-    return 20000 / playerStats.agility;
+    return 18000 / playerStats.agility;
 }
 
 function askName(delta) {
@@ -244,6 +244,7 @@ function showGame(delta) {
     if (performance.now() - nameEnteredTime < 2000) {
         app.stage.alpha += 0.04;
     } else {
+        updateSkillButton();
         state = battle;
     }
 }
@@ -296,6 +297,9 @@ function spawnEnemy(delta) {
         }
     }
 }
+let enemyInnerBar;
+let enemyOuterBar;
+let enemyHealthFrame;
 
 // Enemy health
 function drawEnemyHealthBar() {
@@ -303,25 +307,24 @@ function drawEnemyHealthBar() {
     enemyHealthBar.position.set(390, 100);
     app.stage.addChild(enemyHealthBar);
 
+    enemyInnerBar = new PIXI.Graphics();
+    enemyInnerBar.beginFill(0x506171);
+    enemyInnerBar.drawRect(0, 0, 180, 24);
+    enemyInnerBar.endFill();
+    enemyHealthBar.addChild(enemyInnerBar);
 
-    let innerBar = new PIXI.Graphics();
-    innerBar.beginFill(0x506171);
-    innerBar.drawRect(0, 0, 180, 24);
-    innerBar.endFill();
-    enemyHealthBar.addChild(innerBar);
+    enemyOuterBar = new PIXI.Graphics();
+    enemyOuterBar.beginFill(0xf56e6e);
+    enemyOuterBar.drawRect(0, 0, 180, 24);
+    enemyOuterBar.endFill();
+    enemyHealthBar.addChild(enemyOuterBar);
 
-    let outerBar = new PIXI.Graphics();
-    outerBar.beginFill(0xf56e6e);
-    outerBar.drawRect(0, 0, 180, 24);
-    outerBar.endFill();
-    enemyHealthBar.addChild(outerBar);
+    enemyHealthFrame = new Sprite(uiTexture["enemy-hp.png"]);
+    enemyHealthFrame.x = -10;
+    enemyHealthFrame.y = -13;
+    enemyHealthBar.addChild(enemyHealthFrame);
 
-    let healthFrame = new Sprite(uiTexture["enemy-hp.png"]);
-    healthFrame.x = -10;
-    healthFrame.y = -13;
-    enemyHealthBar.addChild(healthFrame);
-
-    enemyHealthBar.outer = outerBar;
+    enemyHealthBar.outer = enemyOuterBar;
 }
 
 function drawExperienceBar() {
@@ -379,8 +382,7 @@ function attack() {
     }
 }
 
-function showDamage(damage) {
-    let style = new PIXI.TextStyle({
+let damageStyle = new PIXI.TextStyle({
         fontFamily: "Abel",
         fontSize: 24,
         fontWeight: "bold",
@@ -393,7 +395,9 @@ function showDamage(damage) {
         dropShadowAngle: Math.PI / 2,
         dropShadowDistance: 3,
     });
-    damageText = new PIXI.Text(damage, style);
+
+function showDamage(damage) {
+    damageText = new PIXI.Text(damage, damageStyle);
     damageText.x = 420;
     damageText.y = 200;
     app.stage.addChild(damageText);
@@ -413,17 +417,23 @@ function addExperience() {
     experienceBar.outer.width = pixelToAdd;
 
     if (playerStats.experience >= playerStats.maxExperience) {
-        ++playerStats.level;
-        ++playerStats.points;
-        playerStats.experience = 0;
-        levelText.text = playerStats.level;
-        experienceBar.outer.width = 0;
-        updateSkillButton();
+        levelUp();
     }
 }
 
-// Enemy spawn
-function enemySpawn() {}
+function levelUp() {
+    ++playerStats.level;
+    ++playerStats.points;
+    playerStats.experience = 0;
+    levelText.text = playerStats.level;
+    experienceBar.outer.width = 0;
+
+    playerStats.maxExperience += playerStats.maxExperience / playerStats.level;
+    monsterStats.maxhp += playerStats.level * 10;
+    monsterStats.experience += 10;
+
+    updateSkillButton();
+}
 
 // Calculate damage
 function getDamage() {
