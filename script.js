@@ -59,6 +59,13 @@ WebFont.load({
 
 // Initialize
 function setup() {
+    let storedPlayerStats = JSON.parse(localStorage.getItem('storedPlayerStats'));
+    let storedMonsterStats = JSON.parse(localStorage.getItem('storedMonsterStats'));
+    if (storedPlayerStats) {
+        playerStats = storedPlayerStats;
+        monsterStats = storedMonsterStats;
+    }
+
     playerTexture = resources["img/player.json"].textures;
     enemyTexture = resources["img/enemy.json"].textures;
     uiTexture = resources["img/ui.json"].textures;
@@ -394,8 +401,6 @@ function attack() {
     } else {
         let damageToPixel = 180 / monsterStats.maxhp;
         let pixelToTake = damageToPixel * damage;
-        // console.log('take ' + damage + ' damage');
-        // console.log('take ' + pixelToTake + ' pixel');
         enemyHealthBar.outer.width -= pixelToTake;
     }
 }
@@ -423,6 +428,8 @@ function showDamage(damage) {
 function finishBattle() {
     battleInProgress = false;
     addExperience();
+    localStorage.setItem('storedPlayerStats', JSON.stringify(playerStats));
+    localStorage.setItem('storedMonsterStats', JSON.stringify(monsterStats));
     state = despawnEnemy;
 }
 
