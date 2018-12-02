@@ -32,6 +32,7 @@ let monsterStats = {
 };
 
 let playerStats = {
+    name: '',
     strength: 1,
     intelligence: 10,
     agility: 10,
@@ -64,6 +65,8 @@ function setup() {
     if (storedPlayerStats) {
         playerStats = storedPlayerStats;
         monsterStats = storedMonsterStats;
+        name = playerStats.name;
+        $('.ask-name').hide();
     }
 
     playerTexture = resources["img/player.json"].textures;
@@ -249,6 +252,7 @@ function getAttackSpeed() {
 
 function askName(delta) {
     if (name) {
+        playerStats.name = name;
         nameEnteredTime = performance.now();
         let bg = new Sprite(resources["img/bg.png"].texture);
         bg.height = 400;
