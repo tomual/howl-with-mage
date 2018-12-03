@@ -66,7 +66,8 @@ function setup() {
         playerStats = storedPlayerStats;
         monsterStats = storedMonsterStats;
         name = playerStats.name;
-        $('.ask-name').hide();
+    } else {
+        $('.ask-name').fadeIn();
     }
 
     playerTexture = resources["img/player.json"].textures;
@@ -263,8 +264,8 @@ function askName(delta) {
 
         initPlayer();
         initEnemy();
-        initUi();
         initParticles();
+        initUi();
         drawEnemyHealthBar();
         app.stage.alpha = 0;
         state = showGame;
@@ -303,7 +304,7 @@ function despawnEnemy(delta) {
     if (damageText && damageText.alpha > 0) {
         damageText.alpha -= 0.04;
         damageParticle.alpha -= 0.04;
-        spellParticle.alpha -= 0.01;
+        spellParticle.alpha -= 0.04;
     }
     if (performance.now() - lastAttacked > 1000) {
         player.texture = playerTexture["player-stand.png"];
